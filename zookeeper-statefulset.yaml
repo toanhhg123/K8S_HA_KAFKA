@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+spec:
+  replicas: 3
+  serviceName: zookeeper
+  selector:
+    matchLabels:
+      service: zookeeper
+  template:
+    metadata:
+      labels:
+        service: zookeeper
+        network/kafka-network: "true"
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: zookeeper
+          image: zookeeper:3.9.2
+          ports:
+            - containerPort: 2181
+            - containerPort: 2888
+            - containerPort: 3888
+          volumeMounts:
+            - name: zookeeper-data
+              mountPath: /var/lib/zookeeper/data
+            - name: zookeeper-log
+              mountPath: /var/lib/zookeeper/log
+
+      restartPolicy: Always
+      volumes:
+        - name: zookeeper-data
+          persistentVolumeClaim:
+            claimName: zookeeper-data-pvc
+        - name: zookeeper-log
+          persistentVolumeClaim:
+            claimName: zookeeper-log-pvc
