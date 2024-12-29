@@ -3,7 +3,6 @@ kind: PersistentVolume
 metadata:
   name: zookeeper-data-pv
 spec:
-  storageClassName: zookeeper-data
   capacity:
     storage: 2Gi
   accessModes:
@@ -17,7 +16,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: zookeeper-data-pvc
 spec:
-  storageClassName: zookeeper-data
   accessModes:
     - ReadWriteMany
   resources:
@@ -30,7 +28,6 @@ kind: PersistentVolume
 metadata:
   name: zookeeper-log-pv
 spec:
-  storageClassName: zookeeper-log
   capacity:
     storage: 2Gi
   accessModes:
@@ -44,7 +41,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: zookeeper-log-pvc
 spec:
-  storageClassName: zookeeper-log
   accessModes:
     - ReadWriteMany
   resources:
@@ -57,7 +53,6 @@ kind: PersistentVolume
 metadata:
   name: kafka-data-pv
 spec:
-  storageClassName: kafka-data
   capacity:
     storage: 5Gi
   accessModes:
@@ -71,7 +66,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: kafka-data-pvc
 spec:
-  storageClassName: kafka-data
   accessModes:
     - ReadWriteMany
   resources:

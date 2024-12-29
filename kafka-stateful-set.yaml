@@ -26,17 +26,18 @@ spec:
           ports:
             - containerPort: 29092
             - containerPort: 9092
+            - containerPort: 39093
           env:
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: "INTERNAL://:29092,LISTENER_EXTERNAL://:9092"
+              value: "INTERNAL://:29092,LISTENER_EXTERNAL://:9092,LOCAL://localhost:39093"
             - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
               value: "true"
             - name: KAFKA_INTER_BROKER_LISTENER_NAME
               value: "INTERNAL"
             - name: KAFKA_LISTENERS
-              value: "INTERNAL://:29092,LISTENER_EXTERNAL://:9092"
+              value: "INTERNAL://:29092,LISTENER_EXTERNAL://:9092,LOCAL://localhost:39093"
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-              value: "INTERNAL:PLAINTEXT,LISTENER_EXTERNAL:PLAINTEXT"
+              value: "INTERNAL:PLAINTEXT,LISTENER_EXTERNAL:PLAINTEXT,LOCAL:PLAINTEXT"
             - name: KAFKA_ZOOKEEPER_CONNECT
               value: "zookeeper:2181"
           volumeMounts:
