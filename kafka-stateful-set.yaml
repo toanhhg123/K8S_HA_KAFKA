@@ -1,58 +1,70 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  labels:
-    service: kafka
   name: kafka
+  labels:
+    app: kafka
 spec:
   serviceName: kafka
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      service: kafka
+      app: kafka
   template:
     metadata:
       labels:
+        app: kafka
         network/kafka-network: "true"
-        service: kafka
     spec:
-      securityContext:
-        fsGroup: 1000
-      enableServiceLinks: false
+      initContainers:
+        - name: volume-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 1001:1001 /bitnami/kafka"]
+          volumeMounts:
+            - name: kafka-data
+              mountPath: /bitnami/kafka
+          securityContext:
+            runAsUser: 0
       containers:
         - name: kafka
-          imagePullPolicy: IfNotPresent
           image: bitnami/kafka:3.9.0
           ports:
-            - containerPort: 29092
             - containerPort: 9092
-            - containerPort: 39093
+              name: kafka
+            - containerPort: 9093
+              name: kafka-internal
           env:
-            - name: KAFKA_ADVERTISED_LISTENERS
-              value: "INTERNAL://:29092,LISTENER_EXTERNAL://:9092,LOCAL://localhost:39093"
-            - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
-              value: "true"
-            - name: KAFKA_INTER_BROKER_LISTENER_NAME
-              value: "INTERNAL"
-            - name: KAFKA_LISTENERS
-              value: "INTERNAL://:29092,LISTENER_EXTERNAL://:9092,LOCAL://localhost:39093"
-            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-              value: "INTERNAL:PLAINTEXT,LISTENER_EXTERNAL:PLAINTEXT,LOCAL:PLAINTEXT"
-            - name: KAFKA_ZOOKEEPER_CONNECT
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: KAFKA_CFG_ZOOKEEPER_CONNECT
               value: "zookeeper:2181"
+            - name: KAFKA_ENABLE_KRAFT
+              value: "no"
+            - name: KAFKA_CFG_LISTENERS
+              value: "INTERNAL://:9093,EXTERNAL://:9092"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: "INTERNAL://$(POD_NAME).kafka.default.svc.cluster.local:9093,EXTERNAL://$(POD_NAME).kafka.default.svc.cluster.local:9092"
+            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+            - name: KAFKA_CFG_INTER_BROKER_LISTENER_NAME
+              value: "INTERNAL"
+            - name: KAFKA_CFG_DEFAULT_REPLICATION_FACTOR
+              value: "3"
+            - name: KAFKA_CFG_MIN_INSYNC_REPLICAS
+              value: "2"
+            - name: KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: "3"
+            - name: ALLOW_PLAINTEXT_LISTENER
+              value: "yes"
           volumeMounts:
-            - mountPath: /var/lib/kafka/
-              name: kafka-data
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "500m"
-            limits:
-              memory: "2Gi"
-              cpu: "1"
-      hostname: kafka
-      restartPolicy: Always
+            - name: kafka-data
+              mountPath: /bitnami/kafka
       volumes:
         - name: kafka-data
           persistentVolumeClaim:
-            claimName: kafka-data-pvc
+            claimName: kafka-data-pvc-0
+  volumeClaimTemplates: [] # Bỏ volumeClaimTemplates đi, vì bạn đã tạo PVC từ trước

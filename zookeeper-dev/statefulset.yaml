@@ -36,15 +36,15 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 10Gi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: zk1-pvc
+
+########
 ---
+########
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -83,15 +83,15 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 10Gi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: zk2-pvc
+
+########
 ---
+########
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -130,11 +130,7 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 10Gi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: zk3-pvc
