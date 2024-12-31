@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+  namespace: kafka
+spec:
+  serviceName: kafka-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: kafka
+          image: bitnami/kafka:3.9
+          ports:
+            - name: broker
+              containerPort: 9092
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              # Generate broker.id from pod ordinal
+              export KAFKA_BROKER_ID=$(hostname | rev | cut -d'-' -f1 | rev)
+              export KAFKA_NODE_ID=$(hostname | rev | cut -d'-' -f1 | rev)
+              exec /entrypoint.sh /run.sh
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KAFKA_CFG_BROKER_ID
+              value: "$(HOSTNAME | rev | cut -d'-' -f1 | rev)"
+            - name: KAFKA_CFG_NODE_ID
+              value: "$(HOSTNAME | rev | cut -d'-' -f1 | rev)"
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+              value: "zk1-0.zk-headless.zk.svc.cluster.local:2181,zk2-0.zk-headless.zk.svc.cluster.local:2181,zk3-0.zk-headless.zk.svc.cluster.local:2181"
+            - name: KAFKA_INTER_BROKER_LISTENER_NAME
+              value: "PLAINTEXT"
+            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT"
+            - name: KAFKA_CFG_LISTENERS
+              value: "PLAINTEXT://:9092"
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: "PLAINTEXT://$(POD_NAME).kafka-headless.kafka.svc.cluster.local:9092"
+
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/kafka
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: kafka-0-pvc

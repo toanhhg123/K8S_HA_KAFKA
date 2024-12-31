@@ -32,7 +32,7 @@ spec:
             - name: ZOO_SYNC_LIMIT
               value: "5"
             - name: ZOO_SERVERS
-              value: server.1=zk1-0.zk-headless:2888:3888;2181 server.2=zk2-0.zk-headless:2888:3888;2181 server.3=zk3-0.zk-headless:2888:3888;2181
+              value: server.1=zk1-0.zk-headless.zk.svc.cluster.local:2888:3888 server.2=zk2-0.zk-headless.zk.svc.cluster.local:2888:3888 server.3=zk3-0.zk-headless.zk.svc.cluster.local:2888:3888
           volumeMounts:
             - name: data
               mountPath: /data
@@ -41,10 +41,7 @@ spec:
           persistentVolumeClaim:
             claimName: zk1-pvc
 
-########
 ---
-########
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -79,7 +76,7 @@ spec:
             - name: ZOO_SYNC_LIMIT
               value: "5"
             - name: ZOO_SERVERS
-              value: server.1=zk1-0.zk-headless:2888:3888;2181 server.2=zk2-0.zk-headless:2888:3888;2181 server.3=zk3-0.zk-headless:2888:3888;2181
+              value: server.1=zk1-0.zk-headless.zk.svc.cluster.local:2888:3888 server.2=zk2-0.zk-headless.zk.svc.cluster.local:2888:3888 server.3=zk3-0.zk-headless.zk.svc.cluster.local:2888:3888
           volumeMounts:
             - name: data
               mountPath: /data
@@ -88,10 +85,7 @@ spec:
           persistentVolumeClaim:
             claimName: zk2-pvc
 
-########
 ---
-########
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -120,13 +114,13 @@ spec:
               name: leader-election
           env:
             - name: ZOO_MY_ID
-              value: "3"
+              value: "2"
             - name: ZOO_INIT_LIMIT
               value: "10"
             - name: ZOO_SYNC_LIMIT
               value: "5"
             - name: ZOO_SERVERS
-              value: server.1=zk1-0.zk-headless:2888:3888;2181 server.2=zk2-0.zk-headless:2888:3888;2181 server.3=zk3-0.zk-headless:2888:3888;2181
+              value: server.1=zk1-0.zk-headless.zk.svc.cluster.local:2888:3888 server.2=zk2-0.zk-headless.zk.svc.cluster.local:2888:3888 server.3=zk3-0.zk-headless.zk.svc.cluster.local:2888:3888
           volumeMounts:
             - name: data
               mountPath: /data
