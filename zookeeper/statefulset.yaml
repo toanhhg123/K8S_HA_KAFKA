@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zk1
+  namespace: zk
+spec:
+  serviceName: zk-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zk
+  template:
+    metadata:
+      labels:
+        app: zk
+    spec:
+      containers:
+        - name: zookeeper
+          image: zookeeper:3.9
+          ports:
+            - containerPort: 2181
+              name: client
+            - containerPort: 2888
+              name: server
+            - containerPort: 3888
+              name: leader-election
+          env:
+            - name: ZOO_MY_ID
+              value: "1"
+            - name: ZOO_INIT_LIMIT
+              value: "10"
+            - name: ZOO_SYNC_LIMIT
+              value: "5"
+            - name: ZOO_SERVERS
+              value: server.1=zk1-0.zk-headless:2888:3888;2181 server.2=zk2-0.zk-headless:2888:3888;2181 server.3=zk3-0.zk-headless:2888:3888;2181
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: zk1-pvc
+
+########
+---
+########
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zk2
+  namespace: zk
+spec:
+  serviceName: zk-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zk
+  template:
+    metadata:
+      labels:
+        app: zk
+    spec:
+      containers:
+        - name: zookeeper
+          image: zookeeper:3.9
+          ports:
+            - containerPort: 2181
+              name: client
+            - containerPort: 2888
+              name: server
+            - containerPort: 3888
+              name: leader-election
+          env:
+            - name: ZOO_MY_ID
+              value: "2"
+            - name: ZOO_INIT_LIMIT
+              value: "10"
+            - name: ZOO_SYNC_LIMIT
+              value: "5"
+            - name: ZOO_SERVERS
+              value: server.1=zk1-0.zk-headless:2888:3888;2181 server.2=zk2-0.zk-headless:2888:3888;2181 server.3=zk3-0.zk-headless:2888:3888;2181
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: zk2-pvc
+
+########
+---
+########
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zk3
+  namespace: zk
+spec:
+  serviceName: zk-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zk
+  template:
+    metadata:
+      labels:
+        app: zk
+    spec:
+      containers:
+        - name: zookeeper
+          image: zookeeper:3.9
+          ports:
+            - containerPort: 2181
+              name: client
+            - containerPort: 2888
+              name: server
+            - containerPort: 3888
+              name: leader-election
+          env:
+            - name: ZOO_MY_ID
+              value: "3"
+            - name: ZOO_INIT_LIMIT
+              value: "10"
+            - name: ZOO_SYNC_LIMIT
+              value: "5"
+            - name: ZOO_SERVERS
+              value: server.1=zk1-0.zk-headless:2888:3888;2181 server.2=zk2-0.zk-headless:2888:3888;2181 server.3=zk3-0.zk-headless:2888:3888;2181
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: zk3-pvc

@@ -1,0 +1,90 @@
+# Define PersistentVolumes
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zk1-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /home/docker/data/zookeeper-data/zk1
+    type: DirectoryOrCreate
+  storageClassName: "standard" # change to your storage class
+
+---
+# Define PersistentVolumeClaims
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zk1-pvc
+  namespace: zk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: "standard"
+  volumeName: zk1-pv
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zk2-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /home/docker/data/zookeeper-data/zk2
+    type: DirectoryOrCreate
+  storageClassName: ""
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zk2-pvc
+  namespace: zk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: ""
+  volumeName: zk2-pv
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zk3-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /home/docker/data/zookeeper-data/zk3
+    type: DirectoryOrCreate
+  storageClassName: ""
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zk3-pvc
+  namespace: zk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: ""
+  volumeName: zk3-pv
