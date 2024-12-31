@@ -2,7 +2,7 @@ spring:
   application:
     name: springkafka
   kafka:
-    bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:localhost:39093}"
+    bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:127.0.0.1:30093}"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
